@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>화재·전기 안전 모니터링 솔루션 개발 — 센서 수집부터 AI 분석까지 | MintSoft</title>
+  <meta name="description" content="화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 대시보드에 보여주고, 기준을 넘으면 문자와 앱 푸시로 알리는 안전관리 모니터링 솔루션을 개발합니다. 센서 연동, 관제 웹, 모바일 앱, 공공기관 보안 요구사항까지 맡고, 측정 데이터는 DuckDB 실시간 분석 저장소에 쌓고 AI 가 이상 징후를 찾으며, 서버 한 대로 센서 1,000대의 10년치를 담습니다.">
+  <meta name="keywords" content="화재 모니터링, 전기화재 예방, 화재 감지 시스템, 전기 안전 모니터링, 안전관리 솔루션, 누설전류 감시, IoT 센서 관제, 실시간 모니터링, MQTT, DuckDB, AI 이상 탐지, 솔루션 개발">
+  <meta name="author" content="MintSoft">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="https://safety.mint-soft.com/">
+  <link rel="alternate" hreflang="ko" href="https://safety.mint-soft.com/">
+  <link rel="alternate" type="text/plain" href="https://safety.mint-soft.com/llms.txt" title="LLM 용 요약">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="화재·전기 안전 모니터링">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:url" content="https://safety.mint-soft.com/">
+  <meta property="og:title" content="화재·전기 안전 모니터링 솔루션 개발 — 센서 수집부터 AI 분석까지 | MintSoft">
+  <meta property="og:description" content="화재·전기 센서 값을 실시간으로 모아 3단계 기준으로 경보하고 문자·앱 푸시로 알립니다. DuckDB 실시간 분석과 AI 이상 탐지, 서버 한 대로 센서 1,000대.">
+  <meta property="og:image" content="https://safety.mint-soft.com/assets/og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="화재·전기 안전 모니터링 솔루션 개발. 화재와 전기 위험, 번지기 전에 알립니다. 센서 값 카드와 추이 그래프 예시가 함께 보인다.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="화재·전기 안전 모니터링 솔루션 개발 — 센서 수집부터 AI 분석까지 | MintSoft">
+  <meta name="twitter:description" content="화재·전기 센서 값을 실시간으로 모아 3단계 기준으로 경보하고 문자·앱 푸시로 알립니다. DuckDB 실시간 분석과 AI 이상 탐지, 서버 한 대로 센서 1,000대.">
+  <meta name="twitter:image" content="https://safety.mint-soft.com/assets/og.png">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://mint-soft.com/#organization",
+      "name": "MintSoft",
+      "url": "https://mint-soft.com"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://safety.mint-soft.com/#website",
+      "url": "https://safety.mint-soft.com/",
+      "name": "화재·전기 안전 모니터링",
+      "inLanguage": "ko-KR",
+      "publisher": {
+        "@id": "https://mint-soft.com/#organization"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://safety.mint-soft.com/#webpage",
+      "url": "https://safety.mint-soft.com/",
+      "name": "화재·전기 안전 모니터링 솔루션 개발 — 센서 수집부터 AI 분석까지 | MintSoft",
+      "description": "화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 대시보드에 보여주고, 기준을 넘으면 문자와 앱 푸시로 알리는 안전관리 모니터링 솔루션을 개발합니다. 센서 연동, 관제 웹, 모바일 앱, 공공기관 보안 요구사항까지 맡고, 측정 데이터는 DuckDB 실시간 분석 저장소에 쌓고 AI 가 이상 징후를 찾으며, 서버 한 대로 센서 1,000대의 10년치를 담습니다.",
+      "inLanguage": "ko-KR",
+      "isPartOf": {
+        "@id": "https://safety.mint-soft.com/#website"
+      },
+      "about": {
+        "@id": "https://safety.mint-soft.com/#service"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://safety.mint-soft.com/assets/og.png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://safety.mint-soft.com/#service",
+      "name": "화재·전기 안전 모니터링 솔루션 개발",
+      "description": "화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 대시보드에 보여주고, 기준을 넘으면 문자와 앱 푸시로 알리는 안전관리 모니터링 솔루션을 개발합니다. 센서 연동, 관제 웹, 모바일 앱, 공공기관 보안 요구사항까지 맡고, 측정 데이터는 DuckDB 실시간 분석 저장소에 쌓고 AI 가 이상 징후를 찾으며, 서버 한 대로 센서 1,000대의 10년치를 담습니다.",
+      "url": "https://safety.mint-soft.com/",
+      "serviceType": "안전관리 모니터링 솔루션 개발",
+      "category": "화재 감지 · 전기화재 예방 · 안전관리",
+      "areaServed": {
+        "@type": "Country",
+        "name": "대한민국"
+      },
+      "inLanguage": "ko-KR",
+      "image": "https://safety.mint-soft.com/assets/og.png",
+      "provider": {
+        "@id": "https://mint-soft.com/#organization"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "개발 범위",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "화재·전기 센서 데이터 실시간 수집 (MQTT, HTTP)"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "실시간 관제 대시보드와 추이 차트"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "3단계 경보 기준과 문자·앱 푸시 알림"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "경보 발생·복구 이력 관리"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "건물별 권한과 관리자 화면"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Android 앱"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "공공기관 보안 요구사항 대응"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "DuckDB 실시간 분석 저장소"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI 이상 탐지·예측·센서 상태 점수"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://safety.mint-soft.com/#faq",
+      "inLanguage": "ko-KR",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "화재·전기 안전 모니터링 솔루션은 무엇인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "건물에 설치한 화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 대시보드에 보여주고, 정해 둔 기준을 넘으면 문자와 앱 푸시로 알리는 관제 시스템입니다. MintSoft 가 센서 연동, 관제 웹, 모바일 앱까지 개발합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "어떤 값을 측정하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "화재 감지 쪽은 일산화탄소(CO), 휘발성유기화합물(VOC), 가스, 열, 습도, 연기 여섯 가지입니다. 전기 안전 쪽은 부하 전압, 부하 전류, 누설 전류, 온도, 주파수 다섯 가지입니다. 센서가 보내는 항목이 다르면 수집 항목을 맞춰 개발합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "경보는 어떻게 판정하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "센서마다, 측정 항목마다 3단계 기준 범위를 설정해 두고 값이 어느 단계에 들어가는지로 판정합니다. 기준을 넘으면 발생 시각을 기록하고 건물 담당자에게 문자와 앱 푸시를 보내며, 값이 정상으로 돌아오면 복구 시각을 남깁니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "실시간으로 수집하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "네. 센서가 MQTT 로 보내는 값을 수집기가 받아 형식과 범위를 검사한 뒤 바로 저장하고 대시보드에 표시합니다. 센서와 서버 사이는 TLS 로 암호화하고 인증 토큰으로 보호합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "AI 분석도 되나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "됩니다. 3단계 기준값 경보에 더해, 새로 쌓이는 센서 데이터에서 평소 패턴을 학습해 기준값에 닿기 전의 이상 징후를 찾고, 앞으로의 값을 예측하고, 센서 상태를 점수로 보여줍니다. 오토인코더, Isolation Forest, 예측 모델 자동 선택을 쓰며 MintSoft 의 계측 AI 모니터링과 같은 분석 엔진입니다. 학습과 판정은 서버의 CPU 에서 돌고 GPU 는 필요 없습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "왜 DuckDB 를 쓰나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "센서 데이터는 고쳐 쓰지 않고 계속 쌓이는 시계열이라, 기간이 길어질수록 일반 데이터베이스에서는 집계가 무거워집니다. 분석용 컬럼 엔진인 DuckDB 는 필요한 열과 기간만 읽으므로 조회 시간이 쌓인 전체 양이 아니라 보려는 구간의 크기로 정해집니다. 측정 데이터는 DuckDB 와 Parquet 에, 사용자·건물·권한 같은 관리 데이터는 관계형 데이터베이스에 둡니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "서버 한 대로 센서를 몇 대까지 감당하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "12코어 CPU 와 1TB 디스크를 가진 서버 한 대를 기준으로, 10초마다 값을 보내는 센서 1,000대의 10년치(약 315억 행, 약 400GB)를 담습니다. 센서 1대가 1년에 쓰는 용량은 10초 간격에서 약 0.04GB 이고, 1TB 에 약 2만 센서·년이 들어갑니다. 같은 DuckDB·Parquet 엔진을 쓰는 계측 AI 모니터링에서 잰 값으로 계산한 것이며, 센서의 전송 간격과 항목 수에 따라 달라집니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "공공기관 보안 요구사항을 맞출 수 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "공공기관 보안성 검토 항목에 맞춰 개발한 경험이 있습니다. 접속 기록 1년 보관과 수정·삭제 차단, 비밀번호 복잡도·주기적 변경·재사용 금지, 관리자 기능의 접속 IP 제한, 전화번호 같은 개인정보 암호화, 센서 통신 인증을 코드에 넣습니다. 망 분리나 VPN 같은 인프라 항목은 발주 기관의 환경에 맞춰 협의합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "이미 설치된 센서나 다른 제조사 장비도 연동할 수 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "센서나 게이트웨이가 MQTT 또는 HTTP 로 값을 내보낼 수 있으면 전송 형식을 맞춰 연동합니다. 처음 연동하는 장비는 전송 항목과 형식을 먼저 확인해야 합니다."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <meta name="theme-color" content="#070b16">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23dc4c1f'/%3E%3Cpath d='M4 17h6l3-8 5 15 3-7h7' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070b16;
+      --bg-2: #0b1122;
+      --surface: #0f172b;
+      --raised: #152039;
+      --line: #1f2c49;
+      --line-strong: #2c3d63;
+      --ink: #eaf0fb;
+      --ink-soft: #a3b1cc;
+      --ink-faint: #6f7e9c;
+      --primary: #dc4c1f;
+      --primary-bright: #ff9a6b;
+      --primary-deep: #b03a14;
+      --warn: #f0b44c;
+      --body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+      --gutter: clamp(20px, 5vw, 56px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; color-scheme: dark; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.75; word-break: keep-all; overflow-wrap: anywhere; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; }
+    code { font-family: var(--mono); font-size: 0.88em; background: var(--raised); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; color: var(--primary-bright); }
+    :focus-visible { outline: 2px solid var(--primary-bright); outline-offset: 3px; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 16px; z-index: 20; background: var(--primary); color: #fff; padding: 8px 14px; }
+
+    .masthead { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .masthead .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 62px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+    .brand svg { flex: none; }
+    .brand span { font-family: var(--mono); font-weight: 400; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.1em; }
+    .masthead nav { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 30px); font-size: 14.5px; }
+    .masthead nav a { text-decoration: none; color: var(--ink-soft); }
+    .masthead nav a:hover { color: var(--ink); }
+    .masthead nav a.ask { color: #fff; background: var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 600; }
+    .masthead nav a.ask:hover { background: var(--primary-deep); }
+    @media (max-width: 760px) { .masthead nav a:not(.ask) { display: none; } }
+
+    .hero { position: relative; padding: clamp(56px, 9vw, 112px) 0 0; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(60% 55% at 78% 0%, color-mix(in srgb, var(--primary) 34%, transparent), transparent 70%),
+        radial-gradient(40% 40% at 8% 30%, color-mix(in srgb, var(--primary-deep) 26%, transparent), transparent 70%); }
+    .hero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 56px 56px; opacity: 0.35; mask-image: linear-gradient(to bottom, #000 0, transparent 70%); }
+    .hero .wrap { position: relative; z-index: 1; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; padding: 0; list-style: none; }
+    .pills li { font-size: 13px; font-weight: 600; color: var(--primary-bright); border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent); background: color-mix(in srgb, var(--primary) 14%, transparent); padding: 4px 12px; border-radius: 999px; }
+    h1 { font-weight: 800; font-size: clamp(38px, 6.6vw, 82px); line-height: 1.12; letter-spacing: -0.035em; margin: 0; }
+    h1 em { font-style: normal; background: linear-gradient(100deg, var(--primary-bright), #ffc9a8 60%, var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero-foot { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(24px, 5vw, 72px); align-items: end; margin-top: clamp(26px, 4vw, 44px); }
+    .lede { font-size: clamp(17px, 1.6vw, 20px); color: var(--ink-soft); margin: 0; max-width: 34em; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 24px; font-size: 15.5px; font-weight: 600; text-decoration: none; border-radius: 10px; border: 1px solid transparent; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease; }
+    .btn.solid { background: var(--primary); color: #fff; box-shadow: 0 10px 30px -10px var(--primary); }
+    .btn.solid:hover { background: #ea5d30; transform: translateY(-2px); }
+    .btn.line { border-color: var(--line-strong); color: var(--ink); background: color-mix(in srgb, var(--surface) 70%, transparent); }
+    .btn.line:hover { border-color: var(--primary-bright); transform: translateY(-2px); }
+    .facts { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-strong); font-size: 14.5px; }
+    .facts li { display: grid; grid-template-columns: 6.5em 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .facts span { font-family: var(--mono); font-size: 12px; color: var(--primary-bright); letter-spacing: 0.04em; padding-top: 3px; }
+    @media (max-width: 860px) { .hero-foot { grid-template-columns: 1fr; } }
+
+    .shot { margin: 0; border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--primary) 70%, transparent), 0 0 0 1px rgba(255, 255, 255, 0.02) inset; }
+    .shot img { width: 100%; }
+    .shot-bar { display: flex; align-items: center; gap: 7px; padding: 9px 14px; border-bottom: 1px solid var(--line); background: var(--bg-2); font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+    .shot-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+    .shot-bar span { margin-left: 8px; }
+    .hero-shot { margin-top: clamp(40px, 6vw, 72px); }
+    .hero-shot .shot { border-bottom: 0; border-radius: 14px 14px 0 0; box-shadow: 0 -20px 120px -30px color-mix(in srgb, var(--primary) 75%, transparent); }
+
+    section.chapter { border-top: 1px solid var(--line); padding: clamp(60px, 8vw, 108px) 0; }
+    section.chapter.tint { background: var(--bg-2); }
+    .chapter-head { max-width: 46em; margin-bottom: clamp(32px, 5vw, 56px); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.1em; color: var(--primary-bright); margin: 0 0 14px; }
+    .eyebrow b { font-weight: 500; color: var(--ink-faint); }
+    h2 { font-weight: 800; font-size: clamp(28px, 4vw, 46px); line-height: 1.22; letter-spacing: -0.03em; margin: 0 0 14px; }
+    .chapter-head p { margin: 0; color: var(--ink-soft); }
+
+    .tabs { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); max-width: 100%; }
+    .tabs button { font: inherit; font-size: 15px; font-weight: 600; background: transparent; color: var(--ink-soft); border: 0; border-radius: 9px; padding: 9px clamp(14px, 2.6vw, 24px); cursor: pointer; }
+    .tabs button:hover { color: var(--ink); }
+    .tabs button[aria-selected="true"] { background: var(--primary); color: #fff; }
+    .panel { display: grid; grid-template-columns: minmax(0, 0.4fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; margin-top: 32px; }
+    .panel[hidden] { display: none; }
+    .panel > div:first-child { position: sticky; top: 92px; }
+    .panel h3 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 4px; }
+    .panel .who { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); letter-spacing: 0.05em; margin: 0 0 18px; }
+    .panel ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-strong); }
+    .panel li { padding: 12px 0 12px 24px; border-bottom: 1px solid var(--line); position: relative; font-size: 15.5px; color: var(--ink-soft); }
+    .panel li::before { content: ""; position: absolute; left: 2px; top: 22px; width: 8px; height: 8px; border-radius: 2px; background: var(--primary); }
+    .pair { display: grid; gap: 24px; }
+    @media (max-width: 860px) { .panel { grid-template-columns: 1fr; } .panel > div:first-child { position: static; } }
+
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 24px 24px 26px; }
+    .card .n { font-family: var(--mono); font-size: 12px; color: var(--primary-bright); }
+    .card h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 8px; }
+    .card p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+    .card.dashed { border-style: dashed; background: transparent; }
+    @media (max-width: 900px) { .cards, .cards.two { grid-template-columns: 1fr; } }
+
+    .fits { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 0; padding: 0; list-style: none; }
+    .fits li { font-size: 14px; color: var(--ink-soft); border: 1px solid var(--line-strong); border-radius: 999px; padding: 4px 14px; }
+    .fits li.more { border-style: dashed; color: var(--ink-faint); }
+
+    .local { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 56px); align-items: center; border: 1px solid color-mix(in srgb, var(--primary) 55%, var(--line)); border-radius: 16px; padding: clamp(24px, 4vw, 40px); margin-bottom: clamp(32px, 5vw, 56px);
+      background: radial-gradient(80% 120% at 0% 0%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 70%), var(--surface); }
+    .local h3 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.3; margin: 10px 0 12px; }
+    .local p { margin: 0; color: var(--ink-soft); font-size: 16px; }
+    .badge { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: #fff; background: var(--primary); padding: 3px 10px; border-radius: 6px; }
+    .flow { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; }
+    .flow li { counter-increment: step; display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start; background: color-mix(in srgb, var(--bg) 60%, transparent); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; font-size: 15px; color: var(--ink-soft); }
+    .flow li::before { content: counter(step); font-family: var(--mono); font-size: 13px; color: var(--primary-bright); border: 1px solid var(--line-strong); border-radius: 6px; width: 28px; height: 28px; display: grid; place-items: center; margin-top: 1px; }
+    .flow b { color: var(--ink); font-weight: 600; }
+    @media (max-width: 860px) { .local { grid-template-columns: 1fr; } }
+
+    table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+    caption { text-align: left; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--ink-faint); padding-bottom: 10px; }
+    th, td { text-align: left; padding: 13px 14px 13px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+    thead th { border-bottom: 1px solid var(--line-strong); font-weight: 600; font-size: 13px; color: var(--ink-faint); }
+    td { color: var(--ink-soft); }
+    .methods tbody th { width: 8.5em; font-size: 17px; font-weight: 700; color: var(--ink); }
+    .methods td.how { width: 15em; font-family: var(--mono); font-size: 13.5px; color: var(--primary-bright); }
+    .methods td.kind { width: 9em; white-space: nowrap; }
+    .tag { display: inline-block; border: 1px solid var(--line-strong); border-radius: 6px; padding: 0 8px; font-size: 12.5px; color: var(--ink-soft); }
+    .tag.ml { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 20%, transparent); color: var(--primary-bright); font-weight: 600; }
+    @media (max-width: 860px) {
+      .methods thead { display: none; }
+      .methods tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--line); }
+      .methods th, .methods td, .methods tbody th, .methods td.how, .methods td.kind { display: block; width: auto; border: 0; padding: 2px 0; }
+    }
+    .note { font-size: 14px; color: var(--ink-faint); margin: 16px 0 0; }
+    .after-table { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 3vw, 32px); margin-top: clamp(32px, 5vw, 56px); }
+    .after-table p { font-size: 14.5px; color: var(--ink-soft); margin: 14px 0 0; }
+    @media (max-width: 860px) { .after-table { grid-template-columns: 1fr; } }
+
+
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .stat { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 22px 22px 24px; }
+    .stat .k { margin: 0; font-size: 14px; color: var(--ink-soft); }
+    .stat .v { margin: 6px 0 8px; font-size: clamp(38px, 4.4vw, 54px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--primary-bright); font-variant-numeric: tabular-nums; }
+    .stat .v small { font-size: 0.38em; font-weight: 600; letter-spacing: 0; margin-left: 4px; color: var(--ink-soft); }
+    .stat .d { margin: 0; font-size: 14px; color: var(--ink-faint); line-height: 1.6; }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 480px) { .stats { grid-template-columns: 1fr; } }
+    .capacity { margin-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--line-strong); }
+    .capacity caption { padding-bottom: 12px; }
+    .capacity th { width: 11em; font-weight: 600; color: var(--ink); }
+    .install { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+    .term { background: #050810; border: 1px solid var(--line-strong); border-radius: 14px; color: #d6e0f5; font-family: var(--mono); font-size: 14px; line-height: 1.9; padding: 22px 24px 26px; overflow-x: auto; box-shadow: 0 30px 80px -50px var(--primary); }
+    .term .c { color: #62708d; }
+    .term .p { color: var(--primary-bright); user-select: none; }
+    .term pre { margin: 0; font: inherit; white-space: pre; }
+    .modes { border-top: 1px solid var(--line-strong); }
+    .modes > div { padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .modes h3 { font-size: 17px; font-weight: 700; margin: 0 0 4px; }
+    .modes p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+    .spec { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); }
+    @media (max-width: 860px) { .install, .spec { grid-template-columns: 1fr; } }
+
+
+    .faq { border-top: 1px solid var(--line-strong); max-width: 860px; }
+    .faq details { border-bottom: 1px solid var(--line); }
+    .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; font-family: var(--mono); font-size: 22px; color: var(--primary-bright); flex: none; }
+    .faq details[open] summary::after { content: "−"; }
+    .faq h3 { margin: 0; font-size: 18.5px; font-weight: 700; letter-spacing: -0.015em; }
+    .faq p { margin: 0; padding: 0 40px 22px 0; color: var(--ink-soft); font-size: 16px; }
+    .ask-block { border-top: 1px solid var(--line); padding: clamp(60px, 8vw, 104px) 0; background: radial-gradient(60% 140% at 50% 120%, color-mix(in srgb, var(--primary) 45%, transparent), transparent 70%), var(--bg-2); }
+    .ask-block .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+    .ask-block h2 { margin: 0 0 12px; }
+    .ask-block p { margin: 0; color: var(--ink-soft); max-width: 34em; }
+    @media (max-width: 720px) { .ask-block .wrap { grid-template-columns: 1fr; } }
+    footer { border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 13px; padding: 22px 0 30px; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    footer a { color: var(--ink-soft); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .rise { opacity: 0; transform: translateY(18px); animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; animation-delay: var(--d, 0s); }
+      @keyframes rise { to { opacity: 1; transform: none; } }
+    }
+
+    .mock { padding: clamp(14px, 2.4vw, 26px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(14px, 2vw, 22px); }
+    .mock h3 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--ink-soft); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .mock h3 small { font-family: var(--mono); font-size: 11.5px; font-weight: 400; color: var(--ink-faint); }
+    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .tiles li { border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); padding: 12px 14px; }
+    .tiles .k { display: block; font-size: 12.5px; color: var(--ink-faint); }
+    .tiles .v { display: block; font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.3; }
+    .tiles .v small { font-size: 12px; font-weight: 500; color: var(--ink-faint); margin-left: 3px; }
+    .grade { display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 600; border-radius: 5px; padding: 0 7px; line-height: 1.7; }
+    .grade.ok { color: #7fd6a4; background: rgba(60, 180, 120, 0.14); }
+    .grade.watch { color: var(--warn); background: rgba(240, 180, 76, 0.16); }
+    .grade.alert { color: #ff8f7a; background: rgba(230, 80, 60, 0.2); }
+    .tiles li.hot { border-color: color-mix(in srgb, var(--warn) 60%, var(--line)); }
+    .mock .trend { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); padding: 14px 16px 10px; }
+    .mock .trend svg { display: block; width: 100%; height: auto; }
+    .mock-note { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-faint); background: var(--bg-2); }
+    @media (max-width: 860px) { .mock { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    .items { margin: 14px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line-strong); }
+    .items li { display: grid; grid-template-columns: 9em 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
+    .items b { color: var(--ink); font-weight: 600; }
+    .path { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 0 0 clamp(32px, 5vw, 56px); padding: 0; list-style: none; counter-reset: hop; }
+    .path li { counter-increment: hop; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 16px 16px 18px; font-size: 14.5px; color: var(--ink-soft); }
+    .path li::before { content: counter(hop, decimal-leading-zero); display: block; font-family: var(--mono); font-size: 12px; color: var(--primary-bright); margin-bottom: 6px; }
+    .path b { display: block; color: var(--ink); font-size: 16.5px; font-weight: 700; margin-bottom: 2px; }
+    @media (max-width: 900px) { .path { grid-template-columns: 1fr; } }
+    .stack tbody th { width: 8.5em; font-weight: 700; color: var(--ink); }
+    .stack td.next { color: var(--ink); }
+    @media (max-width: 720px) {
+      .stack thead { display: none; }
+      .stack tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--line); }
+      .stack th, .stack td, .stack tbody th { display: block; width: auto; border: 0; padding: 2px 0; }
+      .stack td::before { content: attr(data-label) " "; font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); margin-right: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="화재·전기 안전 모니터링 처음으로"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#dc4c1f"/><path d="M4 17h6l3-8 5 15 3-7h7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>화재·전기 안전 모니터링<span>MINTSOFT</span></a>
+      <nav aria-label="주요 메뉴">
+        <a href="#sensors">측정 항목</a>
+        <a href="#features">기능</a>
+        <a href="#architecture">구조</a>
+        <a href="#ai">AI 분석</a>
+        <a href="#scale">용량</a>
+        <a href="#security">보안</a>
+        <a href="#faq">FAQ</a>
+        <a class="ask" href="#ask">개발 문의</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="hero" id="top">
+      <div class="wrap">
+        <ul class="pills rise">
+          <li>화재 감지</li>
+          <li>전기화재 예방</li>
+          <li>안전관리 솔루션 개발</li>
+        </ul>
+        <h1 class="rise" style="--d: 0.08s">화재와 전기 위험,<br><em>번지기 전에</em> 알립니다.</h1>
+        <div class="hero-foot">
+          <div class="rise" style="--d: 0.18s">
+            <p class="lede">건물에 설치한 화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 한 화면에 보여주고, 기준을 넘으면 담당자에게 문자와 앱 푸시로 알리는 모니터링 솔루션을 개발합니다. 센서 연동부터 관제 웹, 모바일 앱까지 맡습니다.</p>
+            <div class="actions">
+              <a class="btn solid" href="#ask">개발 문의</a>
+              <a class="btn line" href="#features">기능 보기</a>
+            </div>
+          </div>
+          <ul class="facts rise" style="--d: 0.28s">
+            <li><span>화재</span>CO · VOC · 가스 · 열 · 습도 · 연기</li>
+            <li><span>전기</span>전압 · 전류 · 누설 전류 · 온도 · 주파수</li>
+            <li><span>경보</span>3단계 기준, 문자 · 앱 푸시</li>
+            <li><span>수집</span>MQTT 실시간, TLS 와 인증 토큰</li>
+            <li><span>분석</span>DuckDB 실시간 분석 · AI 이상 탐지</li>
+            <li><span>용량</span>서버 한 대로 센서 1,000대 · 10년</li>
+          </ul>
+        </div>
+        <div class="hero-shot rise" style="--d: 0.38s">
+          <figure class="shot" aria-label="대시보드 예시 화면">
+            <div class="shot-bar"><i></i><i></i><i></i><span>건물 대시보드 — 예시</span></div>
+            <div class="mock">
+              <div>
+                <h3>화재 감지 <small>3층 전기실</small></h3>
+                <ul class="tiles">
+                  <li><span class="k">CO</span><span class="v">4<small>ppm</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">VOC</span><span class="v">0.21<small>ppm</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">가스</span><span class="v">0<small>%LEL</small></span><span class="grade ok">정상</span></li>
+                  <li class="hot"><span class="k">열</span><span class="v">47.5<small>℃</small></span><span class="grade watch">주의</span></li>
+                  <li><span class="k">습도</span><span class="v">38<small>%</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">연기</span><span class="v">0.02<small>%/m</small></span><span class="grade ok">정상</span></li>
+                </ul>
+              </div>
+              <div>
+                <h3>전기 안전 <small>분전반 A</small></h3>
+                <ul class="tiles">
+                  <li><span class="k">부하 전압</span><span class="v">221.4<small>V</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">부하 전류</span><span class="v">18.2<small>A</small></span><span class="grade ok">정상</span></li>
+                  <li class="hot"><span class="k">누설 전류</span><span class="v">12.6<small>mA</small></span><span class="grade watch">주의</span></li>
+                  <li><span class="k">온도</span><span class="v">41.0<small>℃</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">주파수</span><span class="v">60.0<small>Hz</small></span><span class="grade ok">정상</span></li>
+                  <li><span class="k">최근 경보</span><span class="v">2<small>건</small></span><span class="grade watch">확인 필요</span></li>
+                </ul>
+              </div>
+              <div class="trend">
+                <h3>열 추이 <small>최근 24시간 · 점선은 단계별 기준</small></h3>
+                <svg viewBox="0 0 1000 200" role="img" aria-label="열 값이 오후에 올라 주의 기준선을 넘는 추이 그래프 예시">
+                  <line x1="0" y1="50" x2="1000" y2="50" stroke="#ff8f7a" stroke-width="1" stroke-dasharray="5 6" opacity="0.7"/>
+                  <line x1="0" y1="95" x2="1000" y2="95" stroke="#f0b44c" stroke-width="1" stroke-dasharray="5 6" opacity="0.7"/>
+                  <text x="6" y="44" fill="#ff8f7a" font-size="12" font-family="monospace">경보</text>
+                  <text x="6" y="89" fill="#f0b44c" font-size="12" font-family="monospace">주의</text>
+                  <path d="M0 158 L60 156 L120 160 L180 155 L240 157 L300 152 L360 150 L420 146 L480 140 L540 136 L600 128 L660 118 L720 104 L780 92 L840 84 L900 80 L960 78 L1000 77 L1000 200 L0 200 Z" fill="#dc4c1f" opacity="0.12"/>
+                  <path d="M0 158 L60 156 L120 160 L180 155 L240 157 L300 152 L360 150 L420 146 L480 140 L540 136 L600 128 L660 118 L720 104 L780 92 L840 84 L900 80 L960 78 L1000 77" fill="none" stroke="#ff9a6b" stroke-width="2.5" stroke-linejoin="round"/>
+                  <circle cx="770" cy="94" r="5" fill="#f0b44c"/>
+                </svg>
+              </div>
+            </div>
+            <p class="mock-note">설명을 위해 그린 예시 화면입니다. 값은 실제 현장 데이터가 아닙니다.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <section class="chapter" id="sensors">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>01</b>측정 항목</p>
+          <h2>화재 징후와 전기 이상을<br>한 시스템에서 봅니다</h2>
+          <p>화재 감지 센서와 전기 안전 센서를 같은 건물 단위로 묶어 관리합니다. 센서마다, 항목마다 3단계 기준 범위를 따로 정할 수 있습니다.</p>
+        </div>
+        <div class="cards two">
+          <div class="card">
+            <span class="n">FIRE</span>
+            <h3>화재 감지 — 6개 항목</h3>
+            <p>불꽃이 보이기 전의 변화를 여러 항목으로 함께 봅니다.</p>
+            <ul class="items">
+              <li><b>일산화탄소 (CO)</b><span>불완전 연소의 초기 신호</span></li>
+              <li><b>VOC</b><span>과열된 피복·자재에서 나오는 휘발성 물질</span></li>
+              <li><b>가스</b><span>가연성 가스 누출</span></li>
+              <li><b>열</b><span>설치 위치의 온도 상승</span></li>
+              <li><b>습도</b><span>다른 항목을 해석할 때 함께 보는 환경 값</span></li>
+              <li><b>연기</b><span>연기 농도</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="n">ELECTRICAL</span>
+            <h3>전기 안전 — 5개 항목</h3>
+            <p>전기화재로 이어지는 과부하, 누전, 과열을 분전반에서 감시합니다.</p>
+            <ul class="items">
+              <li><b>부하 전압</b><span>과전압·저전압</span></li>
+              <li><b>부하 전류</b><span>과부하</span></li>
+              <li><b>누설 전류</b><span>절연 열화와 누전</span></li>
+              <li><b>온도</b><span>접속부·차단기 과열</span></li>
+              <li><b>주파수</b><span>전원 품질</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">센서가 보내는 항목이 다르면 수집 항목과 기준을 그에 맞춰 개발합니다.</p>
+      </div>
+    </section>
+
+    <section class="chapter tint" id="features">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>02</b>기능</p>
+          <h2>관제에 필요한 것을<br>한 벌로 만듭니다</h2>
+          <p>센서 값을 보는 화면부터 경보, 알림, 이력, 권한까지 들어 있습니다.</p>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>실시간 대시보드</h3><p>건물마다 센서의 현재 값과 단계를 한 화면에 모으고, 항목별 추이를 차트로 봅니다. 화재용과 전기용 화면이 따로 있습니다.</p></div>
+          <div class="card"><h3>3단계 경보 기준</h3><p>센서마다, 항목마다 단계별 범위를 화면에서 설정합니다. 현장과 설비에 따라 기준을 다르게 둘 수 있습니다.</p></div>
+          <div class="card"><h3>문자 · 앱 푸시 알림</h3><p>기준을 넘으면 그 건물 담당자에게 문자와 앱 푸시를 보냅니다. 받을 사람과 문자 문구는 관리자 화면에서 정합니다.</p></div>
+          <div class="card"><h3>발생 · 복구 이력</h3><p>경보가 언제 시작되고 언제 정상으로 돌아왔는지 기록하고, 담당자의 확인과 조치 여부를 남깁니다.</p></div>
+          <div class="card"><h3>건물별 권한</h3><p>관리자, 담당자, 사용자 세 단계입니다. 사용자는 자신에게 배정된 건물의 센서만 볼 수 있습니다.</p></div>
+          <div class="card"><h3>기록 조회와 내려받기</h3><p>측정 기록과 경보 기록을 기간으로 찾아보고 파일로 내려받습니다. 기상 정보도 함께 기록합니다.</p></div>
+          <div class="card"><h3>Android 앱</h3><p>현장 담당자가 휴대폰에서 대시보드를 보고 경보 푸시를 받습니다.</p></div>
+          <div class="card"><h3>외부 시스템 연동</h3><p>센서 상태와 경보 이벤트를 외부 관제 플랫폼으로 보고하는 연동을 개발합니다.</p></div>
+          <div class="card dashed"><h3>현장에 맞춘 개발</h3><p>센서 종류, 건물 구성, 알림 대상, 연동할 시스템은 현장마다 다릅니다. 필요한 것을 듣고 맞춰 만듭니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" id="architecture">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>03</b>구조</p>
+          <h2>센서에서 알림까지,<br>DuckDB 실시간 분석 위에서</h2>
+          <p>센서가 보낸 값은 검증을 거쳐 분석 저장소에 바로 쌓이고, 저장과 동시에 기준 판정, AI 분석, 알림으로 이어집니다.</p>
+        </div>
+        <ol class="path" aria-label="데이터 흐름">
+          <li><b>센서</b>화재 감지 센서와 전기 안전 센서가 값을 보냅니다.</li>
+          <li><b>MQTT 수신</b>TLS 로 암호화한 연결로 받습니다. HTTP 로도 받습니다.</li>
+          <li><b>검증</b>형식과 범위를 검사하고, 인증 토큰이 없는 요청은 거부합니다.</li>
+          <li><b>적재 · 판정</b>DuckDB 분석 저장소에 쌓고, 3단계 기준과 AI 로 판정합니다.</li>
+          <li><b>표시 · 알림</b>대시보드에 표시하고 문자와 앱 푸시를 보냅니다.</li>
+        </ol>
+
+        <table class="stack">
+          <caption>구성</caption>
+          <thead><tr><th scope="col">영역</th><th scope="col">기술</th><th scope="col">맡는 일</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">관제 웹 · API</th><td data-label="기술">Laravel</td><td class="next" data-label="역할">대시보드, 관리자 화면, 권한, 알림 발송</td></tr>
+            <tr><th scope="row">수집</th><td data-label="기술">Node.js MQTT 수집기</td><td class="next" data-label="역할">센서 값 수신과 검증, 분석 저장소 적재</td></tr>
+            <tr><th scope="row">측정 데이터</th><td data-label="기술">DuckDB + Parquet</td><td class="next" data-label="역할">센서별·날짜별 저장, 실시간 집계와 긴 기간 조회</td></tr>
+            <tr><th scope="row">관리 데이터</th><td data-label="기술">관계형 데이터베이스</td><td class="next" data-label="역할">사용자, 건물, 센서 설정, 경보 이력, 접속 기록</td></tr>
+            <tr><th scope="row">AI 분석</th><td data-label="기술">머신러닝 엔진 (서버 CPU)</td><td class="next" data-label="역할">이상 징후 탐지, 예측, 센서 상태 점수</td></tr>
+            <tr><th scope="row">모바일</th><td data-label="기술">Android 앱</td><td class="next" data-label="역할">현장 담당자용 대시보드와 경보 푸시</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cards two" style="margin-top: clamp(32px, 5vw, 56px)">
+          <div class="card">
+            <span class="n">DuckDB</span>
+            <h3>왜 DuckDB 인가</h3>
+            <p>센서 데이터는 고쳐 쓰지 않고 쌓이기만 하는 시계열입니다. 기간이 길어질수록 일반 데이터베이스에서는 집계가 무거워집니다. 분석용 컬럼 엔진인 DuckDB 는 필요한 열과 기간만 읽어, 조회 시간이 쌓인 전체 양이 아니라 보려는 구간의 크기로 정해집니다.</p>
+          </div>
+          <div class="card">
+            <span class="n">REAL-TIME</span>
+            <h3>실시간 집계와 분석을 한곳에서</h3>
+            <p>새로 들어온 값을 분석 저장소에 바로 쌓아, 대시보드의 집계와 AI 분석이 같은 데이터를 읽습니다. 사용자·건물·권한 같은 관리 데이터는 여럿이 동시에 고치는 데이터라 관계형 데이터베이스에 둡니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter tint" id="ai">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>04</b>AI 분석</p>
+          <h2>기준값에 닿기 전에,<br>평소와 다른 움직임을 찾습니다</h2>
+          <p>기준값 경보는 값이 선을 넘어야 울립니다. 새로 쌓이는 센서 데이터로 평소 패턴을 학습해, 선을 넘기 전의 변화를 먼저 보여줍니다.</p>
+        </div>
+
+        <div class="local">
+          <div>
+            <span class="badge">AI</span>
+            <h3>새로 쌓이는 데이터로<br>센서마다 평소 모양을 학습합니다</h3>
+            <p>MintSoft 의 <a href="https://sensor-ai.mint-soft.com/">계측 AI 모니터링</a>과 같은 분석 엔진을 씁니다. 학습과 판정은 서버의 CPU 에서 돌고 GPU 가 필요 없으며, 센서 데이터를 외부 AI 서비스로 보내지 않습니다.</p>
+          </div>
+          <ol class="flow">
+            <li><span><b>실시간 적재</b> — 센서 값이 들어오는 대로 분석 저장소에 쌓습니다.</span></li>
+            <li><span><b>패턴 학습</b> — 센서마다, 항목마다 시간대별 평소 모양을 학습합니다.</span></li>
+            <li><span><b>이상 징후 판정</b> — 기준값 안이라도 평소와 다른 구간을 표시합니다.</span></li>
+            <li><span><b>알림과 기록</b> — 기준값 경보와 함께 대시보드와 이력에 남깁니다.</span></li>
+          </ol>
+        </div>
+
+        <table class="methods">
+          <thead><tr><th scope="col">분석</th><th scope="col">방식</th><th scope="col">구분</th><th scope="col">화재·전기 현장에서 찾는 것</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">패턴 이탈</th><td class="how">오토인코더(신경망) + 시각대 기준선</td><td class="kind"><span class="tag ml">머신러닝</span></td><td>야간에 떨어져야 할 부하 전류가 유지되는 것처럼, 평소 하루 모양에서 벗어난 구간</td></tr>
+            <tr><th scope="row">다변량 이상</th><td class="how">Isolation Forest</td><td class="kind"><span class="tag ml">머신러닝</span></td><td>전류는 그대로인데 온도와 누설 전류가 함께 오르는 것처럼, 항목의 조합이 평소와 다른 시점</td></tr>
+            <tr><th scope="row">예측</th><td class="how">그래디언트 부스팅 · 지수평활(ETS)</td><td class="kind"><span class="tag ml">머신러닝</span> <span class="tag">통계</span></td><td>지금 추세가 이어지면 언제 기준값에 닿는지</td></tr>
+            <tr><th scope="row">급변</th><td class="how">중앙값 기준 편차</td><td class="kind"><span class="tag">통계</span></td><td>짧은 시간에 값이 평소 변화폭보다 크게 뛴 순간</td></tr>
+            <tr><th scope="row">값 고정 · 공백</th><td class="how">규칙</td><td class="kind"><span class="tag">규칙</span></td><td>값이 오래 그대로이거나 수신이 끊긴 센서 (고장·통신 장애 의심)</td></tr>
+            <tr><th scope="row">상태 점수</th><td class="how">감점 방식 일일 점수</td><td class="kind"><span class="tag">규칙</span></td><td>경보, 누락, 이상 구간을 감점해 센서와 건물의 상태를 점수로 표시</td></tr>
+          </tbody>
+        </table>
+        <p class="note">AI 분석은 기준값 경보를 보완하는 용도이며, 법정 화재 감지기를 대체하지 않습니다.</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="scale">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>05</b>서버 한 대의 용량</p>
+          <h2>서버 한 대로<br>센서 1,000대의 10년치</h2>
+          <p>12코어 CPU 와 1TB 디스크를 가진 서버 한 대, 센서가 10초마다 값을 보내는 경우를 기준으로 한 수치입니다.</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><p class="k">센서 수</p><p class="v">1,000<small>대</small></p><p class="d">10초 간격으로 보낼 때 초당 100행, 하루 864만 행</p></div>
+          <div class="stat"><p class="k">보관 기간</p><p class="v">10<small>년</small></p><p class="d">약 315억 행, 디스크 약 400GB</p></div>
+          <div class="stat"><p class="k">544만 행 집계</p><p class="v">0.1<small>초</small></p><p class="d">원본 전체를 DuckDB 로 한 번에 훑어 집계</p></div>
+          <div class="stat"><p class="k">45일 추이 조회</p><p class="v">0.05<small>초</small></p><p class="d">센서 1대의 45일치 추이 차트를 여는 시간</p></div>
+        </div>
+
+        <table class="capacity">
+          <caption>전송 간격별 용량 (디스크 1TB 기준)</caption>
+          <tbody>
+            <tr><th scope="row">1초 간격</th><td>센서 1대가 1년에 약 3,150만 행, 약 0.4GB — 1TB 에 약 2,000 센서·년 (200대의 10년치)</td></tr>
+            <tr><th scope="row">10초 간격</th><td>센서 1대가 1년에 약 315만 행, 약 0.04GB — 1TB 에 약 2만 센서·년 (2,000대의 10년치)</td></tr>
+            <tr><th scope="row">1분 간격</th><td>센서 1대가 1년에 약 53만 행, 약 0.007GB — 1TB 에 약 12만 센서·년 (1만 2,000대의 10년치)</td></tr>
+            <tr><th scope="row">AI 분석</th><td>센서 1대의 45일치를 학습하고 판정·예측하는 데 약 16초. 1,000대를 차례로 다시 분석하면 약 4시간 30분</td></tr>
+            <tr><th scope="row">GPU</th><td>필요 없음. 분석은 서버의 CPU 로 수행</td></tr>
+          </tbody>
+        </table>
+        <p class="note">같은 DuckDB·Parquet 엔진을 쓰는 계측 AI 모니터링에서 잰 값(12코어 PC, 1초 간격 장비 1대가 1년에 약 0.4GB)으로 계산했습니다. 센서의 전송 간격, 항목 수, 서버 사양에 따라 달라지며, 더 큰 규모는 디스크를 늘리거나 서버를 나눠 구성합니다.</p>
+      </div>
+    </section>
+
+    <section class="chapter tint" id="security">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>06</b>보안</p>
+          <h2>공공기관 보안 요구사항에<br>맞춰 개발합니다</h2>
+          <p>공공기관 보안성 검토 항목 가운데 소프트웨어로 지켜야 하는 것을 코드에 넣었습니다.</p>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>접속 기록 1년 보관</h3><p>로그인 성공·실패와 관리자 화면 접근을 기록하고 1년 이상 보관합니다. 기록은 화면에서 고치거나 지울 수 없습니다.</p></div>
+          <div class="card"><h3>비밀번호 정책</h3><p>문자·숫자·특수문자 혼합, 계정명과 연속·반복 문자 금지, 주기적 변경, 이전 비밀번호 재사용 금지를 적용합니다.</p></div>
+          <div class="card"><h3>관리자 접속 IP 제한</h3><p>관리자 기능은 지정한 IP 에서만 열리도록 설정합니다.</p></div>
+          <div class="card"><h3>개인정보 암호화</h3><p>담당자 전화번호 같은 개인정보는 암호화해 저장합니다.</p></div>
+          <div class="card"><h3>센서 통신 보호</h3><p>센서 연결은 TLS 로 암호화하고, 인증 토큰이 없는 수신 요청은 거부합니다. 들어온 값은 형식과 범위를 검사합니다.</p></div>
+          <div class="card"><h3>권한 분리와 시도 제한</h3><p>역할과 건물에 따라 볼 수 있는 범위를 나누고, 로그인 시도 횟수를 제한합니다.</p></div>
+        </div>
+        <p class="note">망 분리, VPN, 백업 절차 같은 인프라와 운영 항목은 발주 기관의 환경에 맞춰 협의합니다.</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="faq">
+      <div class="wrap">
+        <div class="chapter-head">
+          <p class="eyebrow"><b>07</b>자주 묻는 질문</p>
+          <h2>도입 전에 많이 묻는 것</h2>
+        </div>
+        <div class="faq">
+          <details open>
+            <summary><h3>화재·전기 안전 모니터링 솔루션은 무엇인가요?</h3></summary>
+            <p>건물에 설치한 화재 감지 센서와 전기 안전 센서의 값을 실시간으로 모아 대시보드에 보여주고, 정해 둔 기준을 넘으면 문자와 앱 푸시로 알리는 관제 시스템입니다. MintSoft 가 센서 연동, 관제 웹, 모바일 앱까지 개발합니다.</p>
+          </details>
+          <details>
+            <summary><h3>어떤 값을 측정하나요?</h3></summary>
+            <p>화재 감지 쪽은 일산화탄소(CO), 휘발성유기화합물(VOC), 가스, 열, 습도, 연기 여섯 가지입니다. 전기 안전 쪽은 부하 전압, 부하 전류, 누설 전류, 온도, 주파수 다섯 가지입니다. 센서가 보내는 항목이 다르면 수집 항목을 맞춰 개발합니다.</p>
+          </details>
+          <details>
+            <summary><h3>경보는 어떻게 판정하나요?</h3></summary>
+            <p>센서마다, 측정 항목마다 3단계 기준 범위를 설정해 두고 값이 어느 단계에 들어가는지로 판정합니다. 기준을 넘으면 발생 시각을 기록하고 건물 담당자에게 문자와 앱 푸시를 보내며, 값이 정상으로 돌아오면 복구 시각을 남깁니다.</p>
+          </details>
+          <details>
+            <summary><h3>실시간으로 수집하나요?</h3></summary>
+            <p>네. 센서가 MQTT 로 보내는 값을 수집기가 받아 형식과 범위를 검사한 뒤 바로 저장하고 대시보드에 표시합니다. 센서와 서버 사이는 TLS 로 암호화하고 인증 토큰으로 보호합니다.</p>
+          </details>
+          <details>
+            <summary><h3>AI 분석도 되나요?</h3></summary>
+            <p>됩니다. 3단계 기준값 경보에 더해, 새로 쌓이는 센서 데이터에서 평소 패턴을 학습해 기준값에 닿기 전의 이상 징후를 찾고, 앞으로의 값을 예측하고, 센서 상태를 점수로 보여줍니다. 오토인코더, Isolation Forest, 예측 모델 자동 선택을 쓰며 MintSoft 의 계측 AI 모니터링과 같은 분석 엔진입니다. 학습과 판정은 서버의 CPU 에서 돌고 GPU 는 필요 없습니다.</p>
+          </details>
+          <details>
+            <summary><h3>왜 DuckDB 를 쓰나요?</h3></summary>
+            <p>센서 데이터는 고쳐 쓰지 않고 계속 쌓이는 시계열이라, 기간이 길어질수록 일반 데이터베이스에서는 집계가 무거워집니다. 분석용 컬럼 엔진인 DuckDB 는 필요한 열과 기간만 읽으므로 조회 시간이 쌓인 전체 양이 아니라 보려는 구간의 크기로 정해집니다. 측정 데이터는 DuckDB 와 Parquet 에, 사용자·건물·권한 같은 관리 데이터는 관계형 데이터베이스에 둡니다.</p>
+          </details>
+          <details>
+            <summary><h3>서버 한 대로 센서를 몇 대까지 감당하나요?</h3></summary>
+            <p>12코어 CPU 와 1TB 디스크를 가진 서버 한 대를 기준으로, 10초마다 값을 보내는 센서 1,000대의 10년치(약 315억 행, 약 400GB)를 담습니다. 센서 1대가 1년에 쓰는 용량은 10초 간격에서 약 0.04GB 이고, 1TB 에 약 2만 센서·년이 들어갑니다. 같은 DuckDB·Parquet 엔진을 쓰는 계측 AI 모니터링에서 잰 값으로 계산한 것이며, 센서의 전송 간격과 항목 수에 따라 달라집니다.</p>
+          </details>
+          <details>
+            <summary><h3>공공기관 보안 요구사항을 맞출 수 있나요?</h3></summary>
+            <p>공공기관 보안성 검토 항목에 맞춰 개발한 경험이 있습니다. 접속 기록 1년 보관과 수정·삭제 차단, 비밀번호 복잡도·주기적 변경·재사용 금지, 관리자 기능의 접속 IP 제한, 전화번호 같은 개인정보 암호화, 센서 통신 인증을 코드에 넣습니다. 망 분리나 VPN 같은 인프라 항목은 발주 기관의 환경에 맞춰 협의합니다.</p>
+          </details>
+          <details>
+            <summary><h3>이미 설치된 센서나 다른 제조사 장비도 연동할 수 있나요?</h3></summary>
+            <p>센서나 게이트웨이가 MQTT 또는 HTTP 로 값을 내보낼 수 있으면 전송 형식을 맞춰 연동합니다. 처음 연동하는 장비는 전송 항목과 형식을 먼저 확인해야 합니다.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <div class="ask-block" id="ask">
+      <div class="wrap">
+        <div>
+          <h2>안전 모니터링을 만들려고 하시나요</h2>
+          <p>센서 종류와 설치 규모, 알림이 필요한 대상을 알려 주시면 개발 범위와 일정을 안내해 드립니다.</p>
+        </div>
+        <a class="btn solid" href="https://www.mint-soft.com/contact/">MintSoft 에 문의하기</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© MintSoft</span>
+      <span>화재·전기 안전 모니터링 · <a href="https://mint-soft.com">mint-soft.com</a></span>
+    </div>
+  </footer>
+</body>
+</html>
